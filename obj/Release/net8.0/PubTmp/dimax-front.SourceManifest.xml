@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<sitemanifest>
+  <IisApp path="C:\Users\Elvis Crespo\Documents\2024\C-SHARP\dimax-front\dimax-front\obj\Release\net8.0\PubTmp\Out\" />
+  <dbfullsql path="C:\Users\Elvis Crespo\Documents\2024\C-SHARP\dimax-front\dimax-front\obj\Release\net8.0\PubTmp\EFSQLScripts\dimax_front.Infrastructure.Context.WorkshopDbContext.sql" />
+</sitemanifest>

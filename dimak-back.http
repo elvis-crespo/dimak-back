@@ -1,0 +1,6 @@
+@dimax_front_HostAddress = http://localhost:5078
+
+GET {{dimax_front_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

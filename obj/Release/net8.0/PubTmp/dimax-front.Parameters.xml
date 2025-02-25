@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="IIS Web Application Name" description="" value="release" tags="IisApp">
+    <parameterEntry kind="ProviderPath" scope="IisApp" match="^C:\\Users\\Elvis\ Crespo\\Documents\\2024\\C-SHARP\\dimax-front\\dimax-front\\obj\\Release\\net8\.0\\PubTmp\\Out\\$" />
+  </parameter>
+  <parameter name="dimax_front.Infrastructure.Context.WorkshopDbContext" description="" value="Server=tcp:prueba-dimaxdbserver.database.windows.net,1433;Initial Catalog=prueba-dimax_db;Persist Security Info=False;User ID=elviscrespo;Password=Pei1234+-;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;" tags="dbfullsql">
+    <parameterEntry kind="ProviderPath" scope="dbfullsql" match="^C:\\Users\\Elvis\ Crespo\\Documents\\2024\\C-SHARP\\dimax-front\\dimax-front\\obj\\Release\\net8\.0\\PubTmp\\EFSQLScripts\\dimax_front\.Infrastructure\.Context\.WorkshopDbContext\.sql$" />
+  </parameter>
+</parameters>

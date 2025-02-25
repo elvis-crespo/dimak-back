@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121.
+-->
+<Project>
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <_PublishTargetUrl>C:\Users\Elvis Crespo\Downloads\AQUI</_PublishTargetUrl>
+    <History>True|2025-02-13T06:59:29.7602102Z||;False|2025-02-13T01:59:16.9498744-05:00||;True|2025-02-13T01:43:48.9914566-05:00||;True|2025-02-08T13:01:12.9986856-05:00||;True|2025-02-04T17:59:24.8005026-05:00||;</History>
+    <LastFailureDetails />
+  </PropertyGroup>
+  <ItemGroup>
+    <EFMigrations Include="dimax_front.Infrastructure.Context.WorkshopDbContext">
+      <Value>Server=tcp:prueba-dimaxdbserver.database.windows.net,1433%3bInitial Catalog=dimak-demo_db%3bPersist Security Info=False%3bUser ID=elviscrespo%3bPassword=Pei1234+-%3bMultipleActiveResultSets=False%3bEncrypt=True%3bTrustServerCertificate=False%3bConnection Timeout=30%3b</Value>
+    </EFMigrations>
+  </ItemGroup>
+</Project>

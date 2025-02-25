@@ -1,0 +1,724 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Dimax API",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/v1/auth/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/refresh-token": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenRequestDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenRequestDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenRequestDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/auth": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/admin-only": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/installation": {
+      "get": {
+        "tags": [
+          "Installation"
+        ],
+        "parameters": [
+          {
+            "name": "invoiceNumber",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/installation/showall": {
+      "get": {
+        "tags": [
+          "Installation"
+        ],
+        "parameters": [
+          {
+            "name": "plate",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortDir",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/installation/register": {
+      "post": {
+        "tags": [
+          "Installation"
+        ],
+        "parameters": [
+          {
+            "name": "plate",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "Date",
+                  "InvoiceNumber",
+                  "TechnicianName"
+                ],
+                "type": "object",
+                "properties": {
+                  "InvoiceNumber": {
+                    "type": "string"
+                  },
+                  "TechnicalFileNumber": {
+                    "type": "string"
+                  },
+                  "TechnicianName": {
+                    "type": "string"
+                  },
+                  "InstallationCompleted": {
+                    "type": "string"
+                  },
+                  "Date": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "PhotoUrl": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "InvoiceNumber": {
+                  "style": "form"
+                },
+                "TechnicalFileNumber": {
+                  "style": "form"
+                },
+                "TechnicianName": {
+                  "style": "form"
+                },
+                "InstallationCompleted": {
+                  "style": "form"
+                },
+                "Date": {
+                  "style": "form"
+                },
+                "PhotoUrl": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/installation/delete": {
+      "delete": {
+        "tags": [
+          "Installation"
+        ],
+        "parameters": [
+          {
+            "name": "invoiceNumber",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/vehicle/vehicles": {
+      "get": {
+        "tags": [
+          "Vehicle"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/vehicle/search-plate": {
+      "get": {
+        "tags": [
+          "Vehicle"
+        ],
+        "parameters": [
+          {
+            "name": "plate",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/vehicle/register": {
+      "post": {
+        "tags": [
+          "Vehicle"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "Date",
+                  "InvoiceNumber",
+                  "OwnerName",
+                  "Plate",
+                  "TechnicianName"
+                ],
+                "type": "object",
+                "properties": {
+                  "Plate": {
+                    "type": "string"
+                  },
+                  "OwnerName": {
+                    "type": "string"
+                  },
+                  "Brand": {
+                    "type": "string"
+                  },
+                  "Model": {
+                    "type": "string"
+                  },
+                  "Year": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "InvoiceNumber": {
+                    "type": "string"
+                  },
+                  "TechnicalFileNumber": {
+                    "type": "string"
+                  },
+                  "TechnicianName": {
+                    "type": "string"
+                  },
+                  "InstallationCompleted": {
+                    "type": "string"
+                  },
+                  "Date": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "PhotoUrl": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "Plate": {
+                  "style": "form"
+                },
+                "OwnerName": {
+                  "style": "form"
+                },
+                "Brand": {
+                  "style": "form"
+                },
+                "Model": {
+                  "style": "form"
+                },
+                "Year": {
+                  "style": "form"
+                },
+                "InvoiceNumber": {
+                  "style": "form"
+                },
+                "TechnicalFileNumber": {
+                  "style": "form"
+                },
+                "TechnicianName": {
+                  "style": "form"
+                },
+                "InstallationCompleted": {
+                  "style": "form"
+                },
+                "Date": {
+                  "style": "form"
+                },
+                "PhotoUrl": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/vehicle/update": {
+      "put": {
+        "tags": [
+          "Vehicle"
+        ],
+        "parameters": [
+          {
+            "name": "plate",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Vehicle"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Vehicle"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Vehicle"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/vehicle/delete": {
+      "delete": {
+        "tags": [
+          "Vehicle"
+        ],
+        "parameters": [
+          {
+            "name": "plate",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/WeatherForecast": {
+      "get": {
+        "tags": [
+          "WeatherForecast"
+        ],
+        "operationId": "GetWeatherForecast",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WeatherForecast"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WeatherForecast"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WeatherForecast"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "InstallationHistory": {
+        "required": [
+          "date",
+          "invoiceNumber",
+          "technicianName"
+        ],
+        "type": "object",
+        "properties": {
+          "historyId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "invoiceNumber": {
+            "maxLength": 17,
+            "minLength": 0,
+            "pattern": "^\\d{3}-\\d{3}-\\d{9}$",
+            "type": "string"
+          },
+          "technicalFileNumber": {
+            "maxLength": 15,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "technicianName": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "installationCompleted": {
+            "type": "string",
+            "nullable": true
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "photoUrl": {
+            "maxLength": 255,
+            "type": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "plateId": {
+            "type": "string",
+            "nullable": true
+          },
+          "vehicle": {
+            "$ref": "#/components/schemas/Vehicle"
+          }
+        },
+        "additionalProperties": false
+      },
+      "LoginDTO": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RefreshTokenRequestDTO": {
+        "required": [
+          "refreshToken"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "refreshToken": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RegisterDTO": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "role": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Vehicle": {
+        "required": [
+          "ownerName",
+          "plate"
+        ],
+        "type": "object",
+        "properties": {
+          "plate": {
+            "maxLength": 8,
+            "minLength": 0,
+            "pattern": "^[A-Z]{3}-\\d{4}$",
+            "type": "string"
+          },
+          "ownerName": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "brand": {
+            "maxLength": 50,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "model": {
+            "maxLength": 50,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "year": {
+            "maximum": 2147483647,
+            "minimum": 1900,
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "installationHistories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InstallationHistory"
+            },
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "WeatherForecast": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "temperatureC": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "temperatureF": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "summary": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "apiKey",
+        "description": "Please enter JWT with Bearer into field",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  },
+  "security": [
+    {
+      "Bearer": [ ]
+    }
+  ]
+}
