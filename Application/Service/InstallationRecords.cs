@@ -53,17 +53,8 @@ namespace dimax_front.Application.Service
                         Message: $"No se encontró un vehículo con la placa {plate}"
                     );
                 
-                //var invoceNumbreUnique = await _workshopDb.InstallationHistories.FirstOrDefaultAsync(x => x.InvoiceNumber == historyDTO.InvoiceNumber);
-                //if (invoceNumbreUnique != null)
-                //    return new ServiceResponse.GeneralResponse
-                //    (
-                //         IsSuccess: false,
-                //        StatusCode: StatusCodes.Status400BadRequest,
-                //        Message: "El número de factura ya existe. Debe ser único."
-                //    );
-
                 var existingInvoice = await _workshopDb.InstallationHistories
-                .FirstOrDefaultAsync(i => i.InvoiceNumber == historyDTO.InvoiceNumber && historyDTO.InvoiceNumber != null);
+                    .FirstOrDefaultAsync(i => i.InvoiceNumber == historyDTO.InvoiceNumber && historyDTO.InvoiceNumber != null);
 
                 if (historyDTO.InvoiceNumber != null && existingInvoice != null)
                 {
@@ -114,6 +105,168 @@ namespace dimax_front.Application.Service
                     IsSuccess: false,
                     StatusCode: StatusCodes.Status500InternalServerError,
                     Message: $"Error al registrar la instalación: {ex.Message}"
+                );
+            }
+        }
+
+        public async Task<ServiceResponse.GeneralResponse> UpdateInstallationByTechnicalFile(
+     InstallationHistoryDTO historyDTO,
+     string scheme,
+     string host)
+        {
+            try
+            {
+                // Obtener el número de ficha técnica desde el DTO
+                string technicalFileNumber = historyDTO.TechnicalFileNumber;
+
+                // Validaciones
+                var validationResponses = new List<ServiceResponse.GeneralResponse?>
+        {
+            InstallationValidator.ValidateInvoiceNumber(historyDTO.InvoiceNumber),
+            InstallationValidator.ValidateTechnicalFileNumber(historyDTO.TechnicalFileNumber),
+            InstallationValidator.ValidateTechnicianName(historyDTO.TechnicianName),
+            InstallationValidator.ValidateDate(historyDTO.Date),
+            InstallationValidator.ValidateInstallationCompleted(historyDTO.InstallationCompleted),
+        };
+
+                var errorResponse = validationResponses.FirstOrDefault(r => r != null);
+                if (errorResponse != null)
+                    return errorResponse;
+
+                // Buscar instalación por Nº de Ficha Técnica
+                var existingRecord = await _workshopDb.InstallationHistories
+                    .FirstOrDefaultAsync(i => i.TechnicalFileNumber == technicalFileNumber);
+
+                if (existingRecord == null)
+                {
+                    return new ServiceResponse.GeneralResponse
+                    (
+                        IsSuccess: false,
+                        StatusCode: StatusCodes.Status404NotFound,
+                        Message: $"No se encontró una instalación con la Ficha Técnica {technicalFileNumber}"
+                    );
+                }
+
+                // Verificar si el número de factura ya existe en otro registro
+                if (historyDTO.InvoiceNumber != null)
+                {
+                    var existingInvoice = await _workshopDb.InstallationHistories
+                        .FirstOrDefaultAsync(i => i.InvoiceNumber == historyDTO.InvoiceNumber);
+
+                    if (existingInvoice != null)
+                    {
+                        return new ServiceResponse.GeneralResponse
+                        (
+                            IsSuccess: false,
+                            StatusCode: StatusCodes.Status400BadRequest,
+                            Message: "El número de factura ya existe."
+                        );
+                    }
+                }
+
+                // Mapear los valores del DTO al objeto existente
+                _mapper.Map(historyDTO, existingRecord);
+
+                // Procesar imagen si es nueva
+                if (historyDTO.PhotoUrl != null)
+                {
+                    var uploadImage = await _fileService.SaveFileAsync(historyDTO.PhotoUrl, scheme, host);
+                    if (!uploadImage.IsSuccess)
+                    {
+                        return new ServiceResponse.GeneralResponse
+                        (
+                            IsSuccess: false,
+                            StatusCode: uploadImage.StatusCode,
+                            Message: uploadImage.Message
+                        );
+                    }
+                    existingRecord.PhotoUrl = uploadImage.Message;
+                }
+
+                // Guardar cambios
+                _workshopDb.InstallationHistories.Update(existingRecord);
+                await _workshopDb.SaveChangesAsync();
+
+                return new ServiceResponse.GeneralResponse
+                (
+                    IsSuccess: true,
+                    StatusCode: StatusCodes.Status200OK,
+                    Message: "Instalación actualizada correctamente"
+                );
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResponse.GeneralResponse
+                (
+                    IsSuccess: false,
+                    StatusCode: StatusCodes.Status500InternalServerError,
+                    Message: $"Error al actualizar la instalación: {ex.Message}"
+                );
+            }
+        }
+
+        //service to get installation record for TechnicalFileNumber
+        public async Task<ServiceResponse.ApiResponse> GetForTechnicalFileNumber(string technicalFileNumber)
+        {
+            // Validar el número de factura
+            var validateTechnicalFileNumber = InstallationValidator.ValidateTechnicalFileNumber(technicalFileNumber);
+            if (validateTechnicalFileNumber != null)
+            {
+                return new ServiceResponse.ApiResponse
+                (
+                    IsSuccess: validateTechnicalFileNumber.IsSuccess,
+                    StatusCode: validateTechnicalFileNumber.StatusCode,
+                    Message: validateTechnicalFileNumber.Message,
+                    Data: null
+                );
+            }
+
+            try
+            {
+                // Verificar que el número de factura no esté vacío
+                if (string.IsNullOrEmpty(technicalFileNumber))
+                {
+                    return new ServiceResponse.ApiResponse
+                    (
+                        IsSuccess: false,
+                        StatusCode: StatusCodes.Status400BadRequest,
+                        Message: "La ficha técnica no puede estar vacío.",
+                        Data: null
+                    );
+                }
+
+                // Buscar la instalación por número de factura
+                var installation = await _workshopDb.InstallationHistories
+                    .FirstOrDefaultAsync(ih => ih.TechnicalFileNumber == technicalFileNumber);
+
+                if (installation == null)
+                {
+                    return new ServiceResponse.ApiResponse
+                    (
+                        IsSuccess: false,
+                        StatusCode: StatusCodes.Status404NotFound,
+                        Message: $"No se encontró la instalación con esta ficha técnica: {technicalFileNumber}",
+                        Data: null
+                    );
+                }
+
+                return new ServiceResponse.ApiResponse
+                (
+                    IsSuccess: true,
+                    StatusCode: StatusCodes.Status200OK,
+                    Message: "Datos obtenidos correctamente.",
+                    Data: installation
+                );
+            }
+            catch (Exception ex)
+            {
+                // Puedes loguear el error aquí para tener más detalles
+                return new ServiceResponse.ApiResponse
+                (
+                    IsSuccess: false,
+                    StatusCode: StatusCodes.Status500InternalServerError,
+                    Message: $"Error al obtener la instalación: {ex.Message}",
+                    Data: null
                 );
             }
         }

@@ -7,27 +7,43 @@ namespace dimax_front.Application.Validators
     {
         public static ServiceResponse.GeneralResponse? ValidateInvoiceNumber(string invoiceNumber)
         {
-            if (invoiceNumber == null || invoiceNumber.Trim() == "") return null; // Permitimos que sea null o cadena vacía
 
-            if (!Regex.IsMatch(invoiceNumber, @"^\d{3}-\d{3}-\d{9}$"))
-            {
+            if (string.IsNullOrWhiteSpace(invoiceNumber)) return null;
+
+            if (!Regex.IsMatch(invoiceNumber, @"^\d{3}-\d{3}-(\d{9}|[A-Z]{2}\d{7})$"))
                 return new ServiceResponse.GeneralResponse
                 (
                     IsSuccess: false,
                     StatusCode: StatusCodes.Status400BadRequest,
-                    Message: "El número de factura debe tener el formato 001-001-123456789 y solo aceptar números con guiones."
+                    Message: "El formato del número de factura debe ser 001-002-123456789 o 001-002-OP3456789."
                 );
-            }
+
+            if (invoiceNumber.Length != 17)
+                return new ServiceResponse.GeneralResponse
+                (
+                    IsSuccess: false,
+                    StatusCode: StatusCodes.Status400BadRequest,
+                    Message: "El número de factura debe tener exactamente 17 caracteres."
+                );
 
             return null;
         }
 
 
-        // Validación del número de ficha técnica
         public static ServiceResponse.GeneralResponse? ValidateTechnicalFileNumber(string technicalFileNumber)
         {
-            if (technicalFileNumber == null || technicalFileNumber.Trim() == "") return null; // Permitimos que sea null o cadena vacía
+            // Validar que el número de ficha técnica no sea nulo ni vacío
+            if (string.IsNullOrWhiteSpace(technicalFileNumber))
+            {
+                return new ServiceResponse.GeneralResponse
+                (
+                    IsSuccess: false,
+                    StatusCode: StatusCodes.Status400BadRequest,
+                    Message: "El número de ficha técnica es obligatorio."
+                );
+            }
 
+            // Validar que solo contenga números y no exceda los 15 dígitos
             if (!Regex.IsMatch(technicalFileNumber, @"^\d{1,15}$"))
             {
                 return new ServiceResponse.GeneralResponse
@@ -41,9 +57,10 @@ namespace dimax_front.Application.Validators
             return null;
         }
 
+
         public static ServiceResponse.GeneralResponse? ValidateTechnicianName(string technicianName)
         {
-            if (technicianName == null || technicianName.Trim() == "") return null; // Permitimos que sea null o cadena vacía
+            if (technicianName == null || technicianName.Trim() == "") return null;
 
             if (!Regex.IsMatch(technicianName, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
             {
@@ -91,6 +108,7 @@ namespace dimax_front.Application.Validators
 
             return null;
         }
+
 
         public static ServiceResponse.GeneralResponse? ValidateInstallationCompleted(string installationCompleted, int maxLength = 1000, int maxWords = 100)
         {

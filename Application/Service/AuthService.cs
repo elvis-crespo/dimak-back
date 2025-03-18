@@ -25,7 +25,7 @@ namespace dimax_front.Application.Service
         }
 
         public async Task<ServiceResponse.GeneralResponse> RegisterAsync(RegisterDTO registerDto)
-        {
+        { 
             try
             {
                 // Agrupar todas las validaciones en una lista
@@ -198,7 +198,7 @@ namespace dimax_front.Application.Service
                 }
 
                 // Check if access token has expired
-                if (user.TokenExpiryTime.HasValue && user.TokenExpiryTime > DateTime.UtcNow)
+                if (user.TokenExpiryTime.HasValue && user.TokenExpiryTime > DateTime.UtcNow) 
                 {
                     return new ServiceResponse.TokenResponse(
                         IsSuccess: false,
@@ -209,17 +209,6 @@ namespace dimax_front.Application.Service
                     );
                 }
 
-                // Create new token and refresh token
-                //var newAccessToken = CreateToken(user);  // This will update the user's token and token expiry time
-
-                //// You do NOT need to regenerate the refresh token here, only the access token
-                //return new ServiceResponse.TokenResponse(
-                //    IsSuccess: true,
-                //    StatusCode: StatusCodes.Status200OK,
-                //    Message: "New access token generated successfully",
-                //    AccessToken: newAccessToken,
-                //    RefreshToken: request.RefreshToken // Keep the same refresh token
-                //);
                 var response = await CreateTokenResponse(user);
 
                 return new ServiceResponse.TokenResponse(
@@ -282,7 +271,7 @@ namespace dimax_front.Application.Service
         {
             var refreshToken = GenerateRefreshToken();
             user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddHours(8);
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddHours(14);
 
             await _workshopDb.SaveChangesAsync();
             return refreshToken;
@@ -304,7 +293,7 @@ namespace dimax_front.Application.Service
         
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var expiration = DateTime.UtcNow.AddHours(10);
+            var expiration = DateTime.UtcNow.AddHours(8);
 
             var tokenDescriptor = new JwtSecurityToken(
                 issuer: _configuration.GetValue<string>("AppSettings:Issuer"),

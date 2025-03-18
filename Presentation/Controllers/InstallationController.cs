@@ -27,6 +27,17 @@ namespace dimax_front.Presentation.Controllers
             return StatusCode(response.StatusCode, new { response.IsSuccess, response.Message, response.Data });
         }
 
+        [HttpGet("technical")]
+        public async Task<ActionResult> HandleGetForTechnicalFileNumber([FromQuery] string technicalFileNumber)
+        {
+            var response = await _installationRecords.GetForTechnicalFileNumber(technicalFileNumber);
+
+            if (!response.IsSuccess)
+                return StatusCode(response.StatusCode, new { response.IsSuccess, response.Message });
+
+            return StatusCode(response.StatusCode, new { response.IsSuccess, response.Message, response.Data });
+        }
+
         [Authorize]
         [HttpGet("showall")]
         public async Task<ActionResult> HandleGetInstallationPageResponseAsync
@@ -81,6 +92,22 @@ namespace dimax_front.Presentation.Controllers
 
             return StatusCode(response.StatusCode, new { response.IsSuccess, response.Message });
         }
+
+        [Authorize]
+        [HttpPut("update")]
+        public async Task<IActionResult> HandleUpdateInstallationByTechnicalFile([FromForm] InstallationHistoryDTO historyDTO)
+        {
+            var scheme = Request.Scheme;
+            var host = Request.Host.Value;
+
+            var response = await _installationRecords.UpdateInstallationByTechnicalFile(historyDTO, scheme, host);
+
+            if (!response.IsSuccess)
+                return StatusCode(response.StatusCode, new { response.IsSuccess, response.Message });
+
+            return StatusCode(response.StatusCode, new { response.IsSuccess, response.Message });
+        }
+
 
         [Authorize(Roles = "Admin")]
         [HttpDelete("delete")]

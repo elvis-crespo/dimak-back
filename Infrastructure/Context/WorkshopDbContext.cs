@@ -24,10 +24,13 @@ namespace dimax_front.Infrastructure.Context
                 .HasForeignKey(x => x.PlateId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            //ESTO LE QUITAS, ESTÁ EN EL VÍDEO DEL FRONT
-            //modelBuilder.Entity<InstallationHistory>()
-            //    .HasIndex(i => i.InvoiceNumber)
-            //    .IsUnique(); 
+            modelBuilder.Entity<InstallationHistory>()
+                .HasIndex(i => i.InvoiceNumber)
+                .IsUnique();
+
+            modelBuilder.Entity<InstallationHistory>()
+                .HasIndex(x => x.TechnicalFileNumber)
+                .IsUnique();
 
             modelBuilder.Entity<User>()
                 .HasIndex(u => new { u.Id, u.Username, u.Email })

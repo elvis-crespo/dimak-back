@@ -12,8 +12,8 @@ using dimax_front.Infrastructure.Context;
 namespace dimax_front.Migrations
 {
     [DbContext(typeof(WorkshopDbContext))]
-    [Migration("20250213052951_Update-table")]
-    partial class Updatetable
+    [Migration("20250206215931_Inicio")]
+    partial class Inicio
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,6 +40,7 @@ namespace dimax_front.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("InvoiceNumber")
+                        .IsRequired()
                         .HasMaxLength(17)
                         .HasColumnType("nvarchar(17)");
 
@@ -55,14 +56,14 @@ namespace dimax_front.Migrations
                         .HasColumnType("nvarchar(15)");
 
                     b.Property<string>("TechnicianName")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("HistoryId");
 
                     b.HasIndex("InvoiceNumber")
-                        .IsUnique()
-                        .HasFilter("[InvoiceNumber] IS NOT NULL");
+                        .IsUnique();
 
                     b.HasIndex("PlateId");
 

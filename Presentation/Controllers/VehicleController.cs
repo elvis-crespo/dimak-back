@@ -41,7 +41,7 @@ namespace dimax_front.Presentation.Controllers
             return StatusCode(response.StatusCode, new { response.IsSuccess, response.Message, response.Data });
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpPost("register")]
         public async Task<ActionResult> HandleSaveVehicleWithInstallRecord([FromForm] MixDTO mixDTO)
         {

@@ -1,9 +1,11 @@
-﻿using dimax_front.Application.Interfaces;
+﻿using System.Diagnostics;
+using dimax_front.Application.Interfaces;
 using dimax_front.Application.Validators;
 using dimax_front.Core.Entities;
 using dimax_front.Domain.DTOs;
 using dimax_front.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 namespace dimax_front.Application.Service
 {
@@ -106,7 +108,6 @@ namespace dimax_front.Application.Service
             }
 
         }
-
 
         public async Task<ServiceResponse.GeneralResponse> UpdateVehicle(string plateVehicle, Vehicle vehicle)
         {
@@ -306,17 +307,6 @@ namespace dimax_front.Application.Service
         private async Task<ServiceResponse.GeneralResponse> ValidateVehicleAndInstallationAsync(MixDTO mixDTO)
         {
             // Verificar si el número de factura ya existe
-            //var existingInvoice = await _workshopDb.InstallationHistories
-            //    .FirstOrDefaultAsync(i => i.InvoiceNumber == mixDTO.InvoiceNumber);
-            //if (existingInvoice != null)
-            //{
-            //    return new ServiceResponse.GeneralResponse
-            //    (
-            //        IsSuccess: false,
-            //        StatusCode: StatusCodes.Status400BadRequest,
-            //        Message: "El número de factura ya existe."
-            //    );
-            //}
             var existingInvoice = await _workshopDb.InstallationHistories
                 .FirstOrDefaultAsync(i => i.InvoiceNumber == mixDTO.InvoiceNumber && mixDTO.InvoiceNumber != null);
 
@@ -329,6 +319,7 @@ namespace dimax_front.Application.Service
                     Message: "El número de factura ya existe."
                 );
             }
+
 
             // Verificar si el vehículo ya está registrado
             var registeredVehicle = await _workshopDb.Vehicules.AnyAsync(x => x.Plate == mixDTO.Plate);

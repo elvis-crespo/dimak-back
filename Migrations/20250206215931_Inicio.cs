@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace dimax_front.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class Inicio : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

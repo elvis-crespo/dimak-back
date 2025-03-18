@@ -57,6 +57,10 @@ namespace dimax_front.Migrations
 
                     b.HasKey("HistoryId");
 
+                    b.HasIndex("InvoiceNumber")
+                        .IsUnique()
+                        .HasFilter("[InvoiceNumber] IS NOT NULL");
+
                     b.HasIndex("PlateId");
 
                     b.ToTable("InstallationHistories");

@@ -113,12 +113,12 @@
         "IsRequired": false
       },
       {
-        "Name": "InvoiceNumber",
+        "Name": "TechnicalFileNumber",
         "Type": "System.String",
         "IsRequired": false
       },
       {
-        "Name": "TechnicalFileNumber",
+        "Name": "InvoiceNumber",
         "Type": "System.String",
         "IsRequired": false
       },
@@ -182,6 +182,63 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "dimax_front.Presentation.Controllers.InstallationController",
+    "Method": "HandleGetForTechnicalFileNumber",
+    "RelativePath": "api/v1/installation/technical",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "technicalFileNumber",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "dimax_front.Presentation.Controllers.InstallationController",
+    "Method": "HandleUpdateInstallationByTechnicalFile",
+    "RelativePath": "api/v1/installation/update",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "TechnicalFileNumber",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "InvoiceNumber",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "TechnicianName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "InstallationCompleted",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Date",
+        "Type": "System.DateOnly",
+        "IsRequired": false
+      },
+      {
+        "Name": "PhotoUrl",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "dimax_front.Presentation.Controllers.VehicleController",
     "Method": "HandleDeleteVehicle",
     "RelativePath": "api/v1/vehicle/delete",
@@ -231,12 +288,12 @@
         "IsRequired": false
       },
       {
-        "Name": "InvoiceNumber",
+        "Name": "TechnicalFileNumber",
         "Type": "System.String",
         "IsRequired": false
       },
       {
-        "Name": "TechnicalFileNumber",
+        "Name": "InvoiceNumber",
         "Type": "System.String",
         "IsRequired": false
       },

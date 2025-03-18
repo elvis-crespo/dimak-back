@@ -143,6 +143,27 @@
         }
       }
     },
+    "/api/v1/installation/technical": {
+      "get": {
+        "tags": [
+          "Installation"
+        ],
+        "parameters": [
+          {
+            "name": "technicalFileNumber",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/v1/installation/showall": {
       "get": {
         "tags": [
@@ -213,14 +234,15 @@
             "multipart/form-data": {
               "schema": {
                 "required": [
-                  "Date"
+                  "Date",
+                  "TechnicalFileNumber"
                 ],
                 "type": "object",
                 "properties": {
-                  "InvoiceNumber": {
+                  "TechnicalFileNumber": {
                     "type": "string"
                   },
-                  "TechnicalFileNumber": {
+                  "InvoiceNumber": {
                     "type": "string"
                   },
                   "TechnicianName": {
@@ -240,10 +262,77 @@
                 }
               },
               "encoding": {
+                "TechnicalFileNumber": {
+                  "style": "form"
+                },
                 "InvoiceNumber": {
                   "style": "form"
                 },
+                "TechnicianName": {
+                  "style": "form"
+                },
+                "InstallationCompleted": {
+                  "style": "form"
+                },
+                "Date": {
+                  "style": "form"
+                },
+                "PhotoUrl": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/installation/update": {
+      "put": {
+        "tags": [
+          "Installation"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "Date",
+                  "TechnicalFileNumber"
+                ],
+                "type": "object",
+                "properties": {
+                  "TechnicalFileNumber": {
+                    "type": "string"
+                  },
+                  "InvoiceNumber": {
+                    "type": "string"
+                  },
+                  "TechnicianName": {
+                    "type": "string"
+                  },
+                  "InstallationCompleted": {
+                    "type": "string"
+                  },
+                  "Date": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "PhotoUrl": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
                 "TechnicalFileNumber": {
+                  "style": "form"
+                },
+                "InvoiceNumber": {
                   "style": "form"
                 },
                 "TechnicianName": {
@@ -335,7 +424,8 @@
                 "required": [
                   "Date",
                   "OwnerName",
-                  "Plate"
+                  "Plate",
+                  "TechnicalFileNumber"
                 ],
                 "type": "object",
                 "properties": {
@@ -355,10 +445,10 @@
                     "type": "integer",
                     "format": "int32"
                   },
-                  "InvoiceNumber": {
+                  "TechnicalFileNumber": {
                     "type": "string"
                   },
-                  "TechnicalFileNumber": {
+                  "InvoiceNumber": {
                     "type": "string"
                   },
                   "TechnicianName": {
@@ -393,10 +483,10 @@
                 "Year": {
                   "style": "form"
                 },
-                "InvoiceNumber": {
+                "TechnicalFileNumber": {
                   "style": "form"
                 },
-                "TechnicalFileNumber": {
+                "InvoiceNumber": {
                   "style": "form"
                 },
                 "TechnicianName": {
@@ -527,7 +617,8 @@
     "schemas": {
       "InstallationHistory": {
         "required": [
-          "date"
+          "date",
+          "technicalFileNumber"
         ],
         "type": "object",
         "properties": {
@@ -535,14 +626,13 @@
             "type": "integer",
             "format": "int32"
           },
-          "invoiceNumber": {
-            "maxLength": 17,
-            "minLength": 0,
-            "type": "string",
-            "nullable": true
-          },
           "technicalFileNumber": {
             "maxLength": 15,
+            "minLength": 0,
+            "type": "string"
+          },
+          "invoiceNumber": {
+            "maxLength": 17,
             "minLength": 0,
             "type": "string",
             "nullable": true
@@ -638,8 +728,8 @@
         "properties": {
           "plate": {
             "maxLength": 8,
-            "minLength": 0,
-            "pattern": "^[A-Z]{3}-\\d{4}$",
+            "minLength": 7,
+            "pattern": "^[A-Z]{3}-\\d{4}$|^[A-Z]{2}-\\d{3}[A-Z]$",
             "type": "string"
           },
           "ownerName": {

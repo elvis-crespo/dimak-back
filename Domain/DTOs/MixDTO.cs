@@ -8,12 +8,11 @@
         public string? Model { get; set; } = string.Empty;
         public int? Year { get; set; } = 0;
 
+        public required string TechnicalFileNumber { get; set; }
         public string? InvoiceNumber { get; set; } = string.Empty;
-        public string? TechnicalFileNumber { get; set; } = string.Empty;
         public string? TechnicianName { get; set; } = string.Empty;
         public string? InstallationCompleted { get; set; } = string.Empty;
         public required DateOnly Date { get; set; }
-        //public DateTime? Date { get; set; }
         public IFormFile? PhotoUrl { get; set; }
     }
 }

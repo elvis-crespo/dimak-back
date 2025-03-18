@@ -5,9 +5,9 @@ namespace dimax_front.Core.Entities
     public class Vehicle
     {
         [Key]
-        [Required]
-        [StringLength(8, ErrorMessage = "La placa debe tener 8 caracteres.")]
-        [RegularExpression(@"^[A-Z]{3}-\d{4}$", ErrorMessage = "El formato de la placa debe ser XXX-YYYY (tres letras seguidas de un guion y cuatro dígitos).")]
+        [Required(ErrorMessage = "La placa es obligatoria.")]
+        [StringLength(8, MinimumLength = 7, ErrorMessage = "La placa debe tener 7 u 8 caracteres.")]
+        [RegularExpression(@"^[A-Z]{3}-\d{4}$|^[A-Z]{2}-\d{3}[A-Z]$", ErrorMessage = "El formato de la placa debe ser AAA-1234 o AA-123A.")]
         public required string Plate { get; set; }
 
         [Required]

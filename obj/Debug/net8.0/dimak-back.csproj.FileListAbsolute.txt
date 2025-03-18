@@ -176,3 +176,4 @@ C:\Users\Elvis Crespo\Documents\2024\C-SHARP\dimak-back\dimak-back\obj\Debug\net
 C:\Users\Elvis Crespo\Documents\2024\C-SHARP\dimak-back\dimak-back\obj\Debug\net8.0\dimak-back.pdb
 C:\Users\Elvis Crespo\Documents\2024\C-SHARP\dimak-back\dimak-back\obj\Debug\net8.0\dimak-back.genruntimeconfig.cache
 C:\Users\Elvis Crespo\Documents\2024\C-SHARP\dimak-back\dimak-back\obj\Debug\net8.0\ref\dimak-back.dll
+C:\Users\Elvis Crespo\Documents\2024\C-SHARP\dimak-back\dimak-back\obj\Debug\net8.0\dimak-back.sourcelink.json

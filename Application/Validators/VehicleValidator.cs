@@ -6,29 +6,33 @@ namespace dimax_front.Application.Validators
     {
         public static ServiceResponse.GeneralResponse? ValidatePlate(string plate)
         {
-            if (string.IsNullOrEmpty(plate))
-            {
+            if (string.IsNullOrWhiteSpace(plate))
                 return new ServiceResponse.GeneralResponse
                 (
                     IsSuccess: false,
                     StatusCode: StatusCodes.Status400BadRequest,
-                    Message: "La placa del vehículo es obligatoria."
+                    Message: "La placa es obligatoria."
                 );
-            }
 
-            // Expresión regular para validar: 3 letras (mayúsculas o minúsculas), un guion medio y 4 dígitos
-            if (!Regex.IsMatch(plate, @"^[A-Za-z]{3}-\d{4}$"))
-            {
+            if (!Regex.IsMatch(plate, @"^[A-Z]{3}-\d{4}$|^[A-Z]{2}-\d{3}[A-Z]$"))
                 return new ServiceResponse.GeneralResponse
                 (
                     IsSuccess: false,
                     StatusCode: StatusCodes.Status400BadRequest,
-                    Message: "Formato de la placa [AAA-1234]."
+                    Message: "El formato de la placa debe ser AAA-1234 o AA-123A."
                 );
-            }
 
-            return null; // No hay errores
+            if (plate.Length != 8 && plate.Length != 7)
+                return new ServiceResponse.GeneralResponse
+                (
+                    IsSuccess: false,
+                    StatusCode: StatusCodes.Status400BadRequest,
+                    Message: "La placa debe tener 7 u 8 caracteres."
+                );
+
+            return null; // Sin errores
         }
+
 
 
         // Validación del nombre del propietario
@@ -44,7 +48,7 @@ namespace dimax_front.Application.Validators
                 );
             }
 
-            if (!Regex.IsMatch(ownerName, @"^[a-zA-Z\s]+$"))
+            if (!Regex.IsMatch(ownerName, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
             {
                 return new ServiceResponse.GeneralResponse
                 (
@@ -62,13 +66,13 @@ namespace dimax_front.Application.Validators
         {
             if (brand == null || brand.Trim() == "") return null; // Permitimos que sea null o cadena vacía
 
-            if (!Regex.IsMatch(brand, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
+            if (!Regex.IsMatch(brand, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\säëïöüÄËÏÖÜ-]+$"))
             {
                 return new ServiceResponse.GeneralResponse
                 (
                     IsSuccess: false,
                     StatusCode: StatusCodes.Status400BadRequest,
-                    Message: "La marca solo puede contener letras, tildes (á, é, í, ó, ú) y la letra 'ñ'."
+                    Message: "La marca solo puede contener letras, tildes, la letra 'ñ', diéresis, guiones y espacios."
                 );
             }
 
