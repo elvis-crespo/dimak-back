@@ -109,23 +109,42 @@ builder.Services.Configure<FormOptions>(options =>
 
 var app = builder.Build();
 
+//Para carpetas dentro del proyecto se puede usar el siguiente código ISS
+//var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+//Console.WriteLine($"Uploads Path: {uploadsPath}");
 
-var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
-Console.WriteLine($"Uploads Path: {uploadsPath}");
+//// Verifica si la carpeta existe antes de usarla
+//if (!Directory.Exists(uploadsPath))
+//{
+//    Console.WriteLine("Carpeta no existe, creando...");
+//    Directory.CreateDirectory(uploadsPath);
+//}
 
-// Verifica si la carpeta existe antes de usarla
+//// Ahora sí podemos usar PhysicalFileProvider sin problemas
+//app.UseStaticFiles(new StaticFileOptions
+//{
+//    FileProvider = new PhysicalFileProvider(uploadsPath),
+//    RequestPath = "/uploads"
+//})
+//;
+var uploadsPath = @"C:\ImagenesUploads"; // Ruta absoluta donde están las imágenes
+
+//Para carpetas fuera del proyecto se puede usar el siguiente código ISS
+// Verifica si la carpeta existe y crea una si no existe
 if (!Directory.Exists(uploadsPath))
 {
     Console.WriteLine("Carpeta no existe, creando...");
     Directory.CreateDirectory(uploadsPath);
 }
 
-// Ahora sí podemos usar PhysicalFileProvider sin problemas
+// Configura para servir los archivos estáticos desde la carpeta especificada
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new PhysicalFileProvider(uploadsPath),
-    RequestPath = "/uploads"
+    FileProvider = new PhysicalFileProvider(uploadsPath), // Proveedor de archivos
+    RequestPath = "/ImagenesUploads" // El prefijo de la URL para acceder a los archivos
 });
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

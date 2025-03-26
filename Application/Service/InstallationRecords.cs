@@ -43,7 +43,7 @@ namespace dimax_front.Application.Service
                 if (errorResponse != null)
                     return errorResponse; //return the first error found
 
-                // Verificar si la placa existe en la tabla Vehicules
+                //check if the vehicle exists
                 var vehicleExists = await _workshopDb.Vehicules.AnyAsync(v => v.Plate == plate);
                 if (!vehicleExists)
                     return new ServiceResponse.GeneralResponse
@@ -56,6 +56,7 @@ namespace dimax_front.Application.Service
                 var existingInvoice = await _workshopDb.InstallationHistories
                     .FirstOrDefaultAsync(i => i.InvoiceNumber == historyDTO.InvoiceNumber && historyDTO.InvoiceNumber != null);
 
+                //check if the invoice number already exists
                 if (historyDTO.InvoiceNumber != null && existingInvoice != null)
                 {
                     return new ServiceResponse.GeneralResponse
@@ -65,7 +66,20 @@ namespace dimax_front.Application.Service
                         Message: "El número de factura ya existe."
                     );
                 }
+                    
+                var existingTechnicalFile = await _workshopDb.InstallationHistories
+                        .FirstOrDefaultAsync(i => i.TechnicalFileNumber == historyDTO.TechnicalFileNumber && historyDTO.TechnicalFileNumber != null);
 
+                //check if the technical file number already exists
+                if(historyDTO.TechnicalFileNumber != null && existingTechnicalFile != null)
+                {
+                    return new ServiceResponse.GeneralResponse
+                    (
+                        IsSuccess: false,
+                        StatusCode: StatusCodes.Status400BadRequest,
+                        Message: "El número de ficha técnica ya existe."
+                    );
+                }
 
                 var historyImg = historyDTO.PhotoUrl;
                 var newRecord = _mapper.Map<InstallationHistory>(historyDTO);
@@ -73,7 +87,7 @@ namespace dimax_front.Application.Service
 
                 if (historyImg != null)
                 {
-                    var uploadImagen = await _fileService.SaveFileAsync(historyImg, scheme, host);
+                    var uploadImagen = await _fileService.SaveFileAsync(historyImg, scheme, host, newRecord.TechnicalFileNumber);
 
                     if (!uploadImagen.IsSuccess)
                     {
@@ -110,23 +124,21 @@ namespace dimax_front.Application.Service
         }
 
         public async Task<ServiceResponse.GeneralResponse> UpdateInstallationByTechnicalFile(
-     InstallationHistoryDTO historyDTO,
-     string scheme,
-     string host)
+      InstallationHistoryDTO historyDTO,
+      string scheme,
+      string host)
         {
             try
             {
-                // Obtener el número de ficha técnica desde el DTO
                 string technicalFileNumber = historyDTO.TechnicalFileNumber;
 
                 // Validaciones
                 var validationResponses = new List<ServiceResponse.GeneralResponse?>
         {
-            InstallationValidator.ValidateInvoiceNumber(historyDTO.InvoiceNumber),
             InstallationValidator.ValidateTechnicalFileNumber(historyDTO.TechnicalFileNumber),
             InstallationValidator.ValidateTechnicianName(historyDTO.TechnicianName),
             InstallationValidator.ValidateDate(historyDTO.Date),
-            InstallationValidator.ValidateInstallationCompleted(historyDTO.InstallationCompleted),
+            InstallationValidator.ValidateInstallationCompleted(historyDTO.InstallationCompleted)
         };
 
                 var errorResponse = validationResponses.FirstOrDefault(r => r != null);
@@ -138,53 +150,58 @@ namespace dimax_front.Application.Service
                     .FirstOrDefaultAsync(i => i.TechnicalFileNumber == technicalFileNumber);
 
                 if (existingRecord == null)
-                {
                     return new ServiceResponse.GeneralResponse
                     (
                         IsSuccess: false,
                         StatusCode: StatusCodes.Status404NotFound,
                         Message: $"No se encontró una instalación con la Ficha Técnica {technicalFileNumber}"
                     );
-                }
 
-                // Verificar si el número de factura ya existe en otro registro
-                if (historyDTO.InvoiceNumber != null)
+                // Verificar si se subió un nuevo archivo de imagen
+                if (historyDTO.PhotoUrl is IFormFile newPhotoFile)
                 {
-                    var existingInvoice = await _workshopDb.InstallationHistories
-                        .FirstOrDefaultAsync(i => i.InvoiceNumber == historyDTO.InvoiceNumber);
-
-                    if (existingInvoice != null)
+                    // Si la imagen actual no es nula, eliminarla antes de subir la nueva
+                    if (!string.IsNullOrEmpty(existingRecord.PhotoUrl))
                     {
-                        return new ServiceResponse.GeneralResponse
-                        (
-                            IsSuccess: false,
-                            StatusCode: StatusCodes.Status400BadRequest,
-                            Message: "El número de factura ya existe."
-                        );
+                        string oldFileName = Path.GetFileName(existingRecord.PhotoUrl);
+                        _fileService.DeleteFile(oldFileName);
                     }
-                }
 
-                // Mapear los valores del DTO al objeto existente
-                _mapper.Map(historyDTO, existingRecord);
-
-                // Procesar imagen si es nueva
-                if (historyDTO.PhotoUrl != null)
-                {
-                    var uploadImage = await _fileService.SaveFileAsync(historyDTO.PhotoUrl, scheme, host);
+                    // Subir la nueva imagen
+                    var uploadImage = await _fileService.SaveFileAsync(newPhotoFile, scheme, host, historyDTO.TechnicalFileNumber);
                     if (!uploadImage.IsSuccess)
-                    {
                         return new ServiceResponse.GeneralResponse
                         (
                             IsSuccess: false,
                             StatusCode: uploadImage.StatusCode,
                             Message: uploadImage.Message
                         );
-                    }
+
+                    // Guardar la nueva URL de la imagen
                     existingRecord.PhotoUrl = uploadImage.Message;
                 }
 
-                // Guardar cambios
-                _workshopDb.InstallationHistories.Update(existingRecord);
+                // Asignar los valores manualmente, asegurándonos de no sobrescribir Ficha Técnica ni Factura
+                existingRecord.TechnicianName = historyDTO.TechnicianName;
+                existingRecord.Date = historyDTO.Date;
+                existingRecord.InstallationCompleted = historyDTO.InstallationCompleted;
+
+                // Verificar si hay cambios en la entidad con el ChangeTracker de EF Core
+                bool hasChanges = _workshopDb.Entry(existingRecord).State == EntityState.Modified ||
+                                  _workshopDb.Entry(existingRecord).Properties.Any(p => p.IsModified);
+
+                // Si no hubo cambios, retornar sin actualizar
+                if (!hasChanges)
+                {
+                    return new ServiceResponse.GeneralResponse
+                    (
+                        IsSuccess: true,
+                        StatusCode: StatusCodes.Status200OK,
+                        Message: "No se detectaron cambios en la instalación"
+                    );
+                }
+
+                // Guardar cambios en la base de datos
                 await _workshopDb.SaveChangesAsync();
 
                 return new ServiceResponse.GeneralResponse
@@ -200,7 +217,7 @@ namespace dimax_front.Application.Service
                 (
                     IsSuccess: false,
                     StatusCode: StatusCodes.Status500InternalServerError,
-                    Message: $"Error al actualizar la instalación: {ex.Message}"
+                    Message: $"Error al actualizar la instalación. {ex.Message}"
                 );
             }
         }
@@ -380,7 +397,6 @@ namespace dimax_front.Application.Service
                 );
             }
         }
-
 
         public async Task<ServiceResponse.InstallationPageResponse> GetInstallationPageResponseAsync(
     string plate, int pageNumber, int pageSize, string sortBy, string sortDir)

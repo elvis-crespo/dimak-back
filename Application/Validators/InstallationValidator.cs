@@ -109,7 +109,6 @@ namespace dimax_front.Application.Validators
             return null;
         }
 
-
         public static ServiceResponse.GeneralResponse? ValidateInstallationCompleted(string installationCompleted, int maxLength = 1000, int maxWords = 100)
         {
             if (installationCompleted == null || installationCompleted.Trim() == "") return null;

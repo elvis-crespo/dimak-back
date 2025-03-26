@@ -245,7 +245,7 @@ namespace dimax_front.Application.Service
                 string photoUrl = "";
                 if (mixDTO.PhotoUrl != null)
                 {
-                    var uploadImagen = await _fileService.SaveFileAsync(mixDTO.PhotoUrl, scheme, host);
+                    var uploadImagen = await _fileService.SaveFileAsync(mixDTO.PhotoUrl, scheme, host, mixDTO.TechnicalFileNumber);
                     if (!uploadImagen.IsSuccess)
                     {
                         return new ServiceResponse.GeneralResponse
@@ -303,7 +303,6 @@ namespace dimax_front.Application.Service
             }
         }
 
-
         private async Task<ServiceResponse.GeneralResponse> ValidateVehicleAndInstallationAsync(MixDTO mixDTO)
         {
             // Verificar si el número de factura ya existe
@@ -330,6 +329,19 @@ namespace dimax_front.Application.Service
                     IsSuccess: false,
                     StatusCode: StatusCodes.Status400BadRequest,
                     Message: "Vehículo registrado anteriormente"
+                );
+            }
+
+            // Verificar si el número de ficha técnica ya existe
+            var existingTechnicalFile = await _workshopDb.InstallationHistories
+                .FirstOrDefaultAsync(i => i.TechnicalFileNumber == mixDTO.TechnicalFileNumber);
+            if (existingTechnicalFile != null)
+            {
+                return new ServiceResponse.GeneralResponse
+                (
+                    IsSuccess: false,
+                    StatusCode: StatusCodes.Status400BadRequest,
+                    Message: "El número de ficha técnica ya existe."
                 );
             }
 
