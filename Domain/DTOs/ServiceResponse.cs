@@ -1,5 +1,4 @@
 ﻿using dimax_front.Core.Entities;
-using System.Runtime.InteropServices;
 
 namespace dimax_front.Domain.DTOs
 {

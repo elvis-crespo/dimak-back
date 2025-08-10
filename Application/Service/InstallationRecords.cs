@@ -354,8 +354,8 @@ namespace dimax_front.Application.Service
             }
         }
 
-        //service to delete an installation
-        public async Task<ServiceResponse.GeneralResponse> DeleteInstallation(string invoiceNumber)
+        //service to delete an installation record for InvoiceNumber
+        public async Task<ServiceResponse.GeneralResponse> DeleteForInvoiceNumber(string invoiceNumber)
         {
             //validate invoice number
             var validateInvoiceNumber = InstallationValidator.ValidateInvoiceNumber(invoiceNumber);
@@ -373,6 +373,51 @@ namespace dimax_front.Application.Service
                         IsSuccess: false,
                         StatusCode: StatusCodes.Status404NotFound,
                         Message: $"No se encontró la instalación con número de factura: {invoiceNumber}"
+                    );
+
+                //delete the image
+                _fileService.DeleteFile(installation.PhotoUrl);
+
+                _workshopDb.InstallationHistories.Remove(installation);
+                await _workshopDb.SaveChangesAsync();
+                return new ServiceResponse.GeneralResponse
+                (
+                    IsSuccess: true,
+                    StatusCode: StatusCodes.Status200OK,
+                    Message: "Instalación eliminada correctamente"
+                );
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResponse.GeneralResponse
+                (
+                    IsSuccess: false,
+                    StatusCode: StatusCodes.Status500InternalServerError,
+                    Message: $"Error al eliminar la instalación: {ex.Message}"
+                );
+            }
+        }
+
+
+        //service to delete an installation record for technicalFileNumber
+        public async Task<ServiceResponse.GeneralResponse> DeleteForTechnicalFileNumber(string technicalFileNumber)
+        {
+            //validate technicalFileNumber
+            var validatetechnicalFileNumber = InstallationValidator.ValidateTechnicalFileNumber(technicalFileNumber);
+
+            if (validatetechnicalFileNumber != null)
+                return validatetechnicalFileNumber;
+
+            try
+            {
+                //find the installation
+                var installation = await _workshopDb.InstallationHistories.FirstOrDefaultAsync(X => X.TechnicalFileNumber == technicalFileNumber);
+                if (installation == null)
+                    return new ServiceResponse.GeneralResponse
+                    (
+                        IsSuccess: false,
+                        StatusCode: StatusCodes.Status404NotFound,
+                        Message: $"No se encontró la instalación con número de ficha técnica: {technicalFileNumber}"
                     );
 
                 //delete the image

@@ -13,6 +13,7 @@ namespace dimax_front.Application.Interfaces
             (
                 string plate, int pageNumber, int pageSize, string shortBy, string sortDir
             );
-        Task<ServiceResponse.GeneralResponse> DeleteInstallation(string invoiceNumber);
+        Task<ServiceResponse.GeneralResponse> DeleteForInvoiceNumber(string invoiceNumber);
+        Task<ServiceResponse.GeneralResponse> DeleteForTechnicalFileNumber(string technicalFileNumber);
     }
 }

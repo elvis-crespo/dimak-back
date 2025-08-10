@@ -104,29 +104,11 @@ builder.Services.AddCors(opt =>
 
 builder.Services.Configure<FormOptions>(options =>
 {
-    options.MultipartBodyLengthLimit = 104857600; // 100 MB (por ejemplo)
+    options.MultipartBodyLengthLimit = 104857600; // 100 MB 
 });
 
 var app = builder.Build();
 
-//Para carpetas dentro del proyecto se puede usar el siguiente código ISS
-//var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
-//Console.WriteLine($"Uploads Path: {uploadsPath}");
-
-//// Verifica si la carpeta existe antes de usarla
-//if (!Directory.Exists(uploadsPath))
-//{
-//    Console.WriteLine("Carpeta no existe, creando...");
-//    Directory.CreateDirectory(uploadsPath);
-//}
-
-//// Ahora sí podemos usar PhysicalFileProvider sin problemas
-//app.UseStaticFiles(new StaticFileOptions
-//{
-//    FileProvider = new PhysicalFileProvider(uploadsPath),
-//    RequestPath = "/uploads"
-//})
-//;
 var uploadsPath = @"C:\ImagenesUploads"; // Ruta absoluta donde están las imágenes
 
 //Para carpetas fuera del proyecto se puede usar el siguiente código ISS

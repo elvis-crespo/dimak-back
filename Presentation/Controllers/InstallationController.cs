@@ -110,10 +110,22 @@ namespace dimax_front.Presentation.Controllers
 
 
         [Authorize(Roles = "Admin")]
-        [HttpDelete("delete")]
-        public async Task<IActionResult> HandleDeleteInstallation([FromQuery] string invoiceNumber)
+        [HttpDelete("delete-by-invoice")]
+        public async Task<IActionResult> HandleDeleteForInvoiceNumber([FromQuery] string invoiceNumber)
         {
-            var response = await _installationRecords.DeleteInstallation(invoiceNumber);
+            var response = await _installationRecords.DeleteForInvoiceNumber(invoiceNumber);
+
+            if (!response.IsSuccess)
+                return StatusCode(response.StatusCode, new { response.IsSuccess, response.Message });
+
+            return StatusCode(response.StatusCode, new { response.IsSuccess, response.Message });
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("delete-by-technical-file")]
+        public async Task<IActionResult> HandleDeleteForTechnicalFileNumber([FromQuery] string technicalFileNumber)
+        {
+            var response = await _installationRecords.DeleteForTechnicalFileNumber(technicalFileNumber);
 
             if (!response.IsSuccess)
                 return StatusCode(response.StatusCode, new { response.IsSuccess, response.Message });
