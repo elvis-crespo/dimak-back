@@ -89,58 +89,29 @@ namespace dimax_front.Application.Service
 
         public async Task<ServiceResponse.TokenResponse> LoginAsync(LoginDTO loginDto)
         {
+            // Validation: username and password cannot be empty
             if (loginDto == null || string.IsNullOrEmpty(loginDto.Username) || string.IsNullOrEmpty(loginDto.Password))
                 return new ServiceResponse.TokenResponse(
                     IsSuccess: false,
                     StatusCode: StatusCodes.Status400BadRequest,
-                    Message: "Invalid login request",
+                    Message: "Username or password cannot be empty",
                     AccessToken: string.Empty,
                     RefreshToken: string.Empty
                 );
-
-            // Agrupar todas las validaciones en una lista
-            var validationResponses = new List<ServiceResponse.GeneralResponse?>
-                {
-                    UserValidator.ValidateUsername(loginDto.Username),
-                    UserValidator.ValidatePassword(loginDto.Password),
-                };
-
-            // Comprobar si alguna validación falló
-            var errorResponse = validationResponses.FirstOrDefault(r => r != null);
-            if (errorResponse != null)
-            {
-                return new ServiceResponse.TokenResponse(
-                    IsSuccess: false,
-                    StatusCode: errorResponse.StatusCode,
-                    Message: errorResponse.Message,
-                    AccessToken: string.Empty,
-                    RefreshToken: string.Empty
-                );
-            }
 
             try
             {
                 // Check if user exists
                 var existingUser = await _workshopDb.Users.FirstOrDefaultAsync(u => u.Username == loginDto.Username);
 
-                if (existingUser == null || loginDto.Username != existingUser.Username)
-                    return new ServiceResponse.TokenResponse(
-                        IsSuccess: false,
-                        StatusCode: StatusCodes.Status404NotFound,
-                        Message: "User does not exist",
-                        AccessToken: string.Empty,
-                        RefreshToken: string.Empty
-                    );
-
                 // Verify password
                 var passwordHasher = new PasswordHasher<User>();
-                var result = passwordHasher.VerifyHashedPassword(existingUser, existingUser.PasswordHash, loginDto.Password);
 
-                if (result == PasswordVerificationResult.Failed)
+                if (existingUser == null || passwordHasher.VerifyHashedPassword(existingUser, existingUser.PasswordHash, loginDto.Password) == PasswordVerificationResult.Failed)
                     return new ServiceResponse.TokenResponse(
                         IsSuccess: false,
                         StatusCode: StatusCodes.Status401Unauthorized,
-                        Message: "Wrong password",
+                        Message: "Invalid username or password",
                         AccessToken: string.Empty,
                         RefreshToken: string.Empty
                     );

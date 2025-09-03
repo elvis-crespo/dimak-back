@@ -31,7 +31,7 @@ namespace dimax_front.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Vehicules",
+                name: "Vehicles",
                 columns: table => new
                 {
                     Plate = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
@@ -42,7 +42,7 @@ namespace dimax_front.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Vehicules", x => x.Plate);
+                    table.PrimaryKey("PK_Vehicles", x => x.Plate);
                 });
 
             migrationBuilder.CreateTable(
@@ -63,9 +63,9 @@ namespace dimax_front.Migrations
                 {
                     table.PrimaryKey("PK_InstallationHistories", x => x.HistoryId);
                     table.ForeignKey(
-                        name: "FK_InstallationHistories_Vehicules_PlateId",
+                        name: "FK_InstallationHistories_Vehicles_PlateId",
                         column: x => x.PlateId,
-                        principalTable: "Vehicules",
+                        principalTable: "Vehicles",
                         principalColumn: "Plate",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -98,7 +98,7 @@ namespace dimax_front.Migrations
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Vehicules");
+                name: "Vehicles");
         }
     }
 }

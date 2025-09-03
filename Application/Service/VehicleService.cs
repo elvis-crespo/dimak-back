@@ -1,11 +1,12 @@
-﻿using System.Diagnostics;
-using dimax_front.Application.Interfaces;
+﻿using dimax_front.Application.Interfaces;
 using dimax_front.Application.Validators;
 using dimax_front.Core.Entities;
 using dimax_front.Domain.DTOs;
 using dimax_front.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using System.Diagnostics;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace dimax_front.Application.Service
 {
@@ -20,43 +21,66 @@ namespace dimax_front.Application.Service
             _fileService = fileService;
         }
 
-        public async Task<ServiceResponse.ApiResponse> GetAll()
+          public async Task<ServiceResponse.ApiResponse> GetAll(int pageNumber, int pageSize, string sortBy, string sortDir)
         {
             try
             {
-                var vehicles = await _workshopDb.Vehicules
-                .ToListAsync();
+                if (pageNumber <= 0) pageNumber = 1;
+                if (pageSize <= 0) pageSize = 10;
 
-                if (vehicles.Count == 0)
-                    return new ServiceResponse.ApiResponse
-                        (
-                            IsSuccess: false,
-                            StatusCode: StatusCodes.Status400BadRequest,
-                            Message: "No se encontraron registros.",
-                            Data: null
-                        );
+              
+                var query = _workshopDb.Vehicles
+                    .Select(v => new VehicleWithFirstInstallationDto
+                    {
+                        Plate = v.Plate,
+                        OwnerName = v.OwnerName,
+                        Brand = v.Brand,
+                        Model = v.Model,
+                        Year = v.Year,
+                        Date = v.InstallationHistories
+                            .OrderBy(i => i.Date)
+                            .Select(i => i.Date)
+                            .FirstOrDefault()
+                    });
 
-                return new ServiceResponse.ApiResponse
-                        (
-                            IsSuccess: true,
-                            StatusCode: StatusCodes.Status200OK,
-                            Message: "Registros mostrados correctamente.",
-                            Data: vehicles
-                        );
+                // Ordenamiento
+                query = sortDir.ToLower() == "desc"
+                    ? query.OrderByDescending(v => v.Date)
+                    : query.OrderBy(v => v.Date);
 
+                // Paginación
+                var vehicles = await query
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
+
+
+                var totalRecords = await _workshopDb.Vehicles.CountAsync();
+                var totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
+
+                if (!vehicles.Any())
+                {
+                    return new ServiceResponse.ApiResponse(false, StatusCodes.Status404NotFound, "No se encontraron registros.", null);
+                }
+
+                var response = new PagedResponseDTO<object>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalRecords = totalRecords,
+                    TotalPages = totalPages,
+                    IsLastPage = pageNumber >= totalPages,
+                    Data = vehicles.Cast<object>().ToList()
+                };
+
+                return new ServiceResponse.ApiResponse(true, StatusCodes.Status200OK, "Registros obtenidos correctamente.", response);
             }
             catch (Exception ex)
             {
-                return new ServiceResponse.ApiResponse
-                        (
-                            IsSuccess: false,
-                            StatusCode: StatusCodes.Status500InternalServerError,
-                            Message: $"Ha ocurrido un error: {ex.Message}",
-                            Data: null
-                        );
+                return new ServiceResponse.ApiResponse(false, StatusCodes.Status500InternalServerError, $"Ha ocurrido un error: {ex.Message}", null);
             }
-
         }
+
 
         public async Task<ServiceResponse.ApiResponse> GetForPlate(string plate)
         {
@@ -76,7 +100,7 @@ namespace dimax_front.Application.Service
                     );
                 }
 
-                var vehicle = await _workshopDb.Vehicules.Where(x => x.Plate == plate).FirstOrDefaultAsync();
+                var vehicle = await _workshopDb.Vehicles.Where(x => x.Plate == plate).FirstOrDefaultAsync();
 
                 if (vehicle == null)
                     return new ServiceResponse.ApiResponse
@@ -130,7 +154,7 @@ namespace dimax_front.Application.Service
                     return errorResponse; //return the first error found
                 }
 
-                var vehicleDB = await _workshopDb.Vehicules.FirstOrDefaultAsync(x => x.Plate == plateVehicle);
+                var vehicleDB = await _workshopDb.Vehicles.FirstOrDefaultAsync(x => x.Plate == plateVehicle);
 
                 if (vehicleDB is null)
                 {
@@ -186,7 +210,7 @@ namespace dimax_front.Application.Service
 
 
                 // Cargar el vehículo y sus relaciones (historial de instalaciones)
-                var vehicle = await _workshopDb.Vehicules
+                var vehicle = await _workshopDb.Vehicles
                     .Include(v => v.InstallationHistories)
                     .FirstOrDefaultAsync(v => v.Plate == plateVehicle);
 
@@ -206,7 +230,7 @@ namespace dimax_front.Application.Service
 
 
                 // Eliminar el vehículo (y sus historiales si hay cascada configurada)
-                _workshopDb.Vehicules.Remove(vehicle);
+                _workshopDb.Vehicles.Remove(vehicle);
                 await _workshopDb.SaveChangesAsync();
 
                 return new ServiceResponse.GeneralResponse
@@ -281,7 +305,7 @@ namespace dimax_front.Application.Service
                 };
 
                 // Agregar a la base de datos
-                await _workshopDb.Vehicules.AddAsync(vehicle);
+                await _workshopDb.Vehicles.AddAsync(vehicle);
                 await _workshopDb.InstallationHistories.AddAsync(installRecord);
                 await _workshopDb.SaveChangesAsync();
 
@@ -321,7 +345,7 @@ namespace dimax_front.Application.Service
 
 
             // Verificar si el vehículo ya está registrado
-            var registeredVehicle = await _workshopDb.Vehicules.AnyAsync(x => x.Plate == mixDTO.Plate);
+            var registeredVehicle = await _workshopDb.Vehicles.AnyAsync(x => x.Plate == mixDTO.Plate);
             if (registeredVehicle)
             {
                 return new ServiceResponse.GeneralResponse
@@ -374,6 +398,5 @@ namespace dimax_front.Application.Service
                 Message: "Validaciones pasadas"
             );
         }
-
     }
 }

@@ -44,7 +44,7 @@ namespace dimax_front.Application.Service
                     return errorResponse; //return the first error found
 
                 //check if the vehicle exists
-                var vehicleExists = await _workshopDb.Vehicules.AnyAsync(v => v.Plate == plate);
+                var vehicleExists = await _workshopDb.Vehicles.AnyAsync(v => v.Plate == plate);
                 if (!vehicleExists)
                     return new ServiceResponse.GeneralResponse
                     (
@@ -157,6 +157,7 @@ namespace dimax_front.Application.Service
                         Message: $"No se encontró una instalación con la Ficha Técnica {technicalFileNumber}"
                     );
 
+                
                 // Verificar si se subió un nuevo archivo de imagen
                 if (historyDTO.PhotoUrl is IFormFile newPhotoFile)
                 {
@@ -177,8 +178,9 @@ namespace dimax_front.Application.Service
                             Message: uploadImage.Message
                         );
 
-                    // Guardar la nueva URL de la imagen
+                    // Guardar la nueva URL de la imagen y forzar que EF la marque como modificada
                     existingRecord.PhotoUrl = uploadImage.Message;
+                    _workshopDb.Entry(existingRecord).Property(x => x.PhotoUrl).IsModified = true;
                 }
 
                 // Asignar los valores manualmente, asegurándonos de no sobrescribir Ficha Técnica ni Factura
@@ -469,7 +471,7 @@ namespace dimax_front.Application.Service
 
 
                 // Verificar si el vehículo existe
-                var vehicleExists = await _workshopDb.Vehicules.AnyAsync(v => v.Plate == plate);
+                var vehicleExists = await _workshopDb.Vehicles.AnyAsync(v => v.Plate == plate);
                 if (!vehicleExists)
                 {
                     return CreateEmptyResponse("El vehículo no existe en la base de datos.");

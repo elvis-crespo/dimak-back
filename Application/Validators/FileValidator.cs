@@ -8,13 +8,13 @@ namespace dimax_front.Application.Validators
         {
             if (file == null) return null;
 
-            if (file is Stream fileStream && fileStream.Length > 1 * 1024 * 1024) // 1MB
+            if (file is Stream fileStream && fileStream.Length > 500 * 1024) // 1MB
             {
                 return new ServiceResponse.GeneralResponse
                 (
                     IsSuccess: false,
                     StatusCode: StatusCodes.Status400BadRequest,
-                    Message: "La imagen debe pesar menos de 1MB."
+                    Message: "La imagen debe pesar menos de 500KB."
                 );
             }
 

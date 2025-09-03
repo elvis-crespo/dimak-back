@@ -19,8 +19,8 @@ namespace dimax_front.Application.Service
                 if (!imageFile.ContentType.StartsWith("image"))
                     return new ServiceResponse.GeneralResponse(false, StatusCodes.Status400BadRequest, "Solo se permiten imágenes.");
 
-                if (imageFile.Length > 1 * 1024 * 1024) // 5MB
-                    return new ServiceResponse.GeneralResponse(false, StatusCodes.Status400BadRequest, "El archivo excede el tamaño máximo permitido (1 MB).");
+                if (imageFile.Length > 500 * 1024) // 500KB
+                    return new ServiceResponse.GeneralResponse(false, StatusCodes.Status400BadRequest, "El archivo excede el tamaño máximo permitido (500 KB).");
 
                 // **Asegurar que la ficha técnica no sea nula o vacía**
                 if (string.IsNullOrEmpty(fichaTecnica))

@@ -109,7 +109,7 @@ builder.Services.Configure<FormOptions>(options =>
 
 var app = builder.Build();
 
-var uploadsPath = @"C:\ImagenesUploads"; // Ruta absoluta donde están las imágenes
+var uploadsPath = @"C:\ImagenesUploads"; 
 
 //Para carpetas fuera del proyecto se puede usar el siguiente código ISS
 // Verifica si la carpeta existe y crea una si no existe
@@ -136,8 +136,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors(allowOriginsCors);
-
-//app.UseMiddleware<TokenValidationMiddleware>();
 
 app.UseHttpsRedirection();
 

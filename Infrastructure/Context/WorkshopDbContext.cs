@@ -37,7 +37,7 @@ namespace dimax_front.Infrastructure.Context
                 .IsUnique();
         }
 
-        public DbSet<Vehicle> Vehicules { get; set; }
+        public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<InstallationHistory> InstallationHistories { get; set; }
         public DbSet<User> Users { get; set; }
 

@@ -27,6 +27,7 @@ namespace dimax_front.Presentation.Controllers
             return StatusCode(response.StatusCode, new { response.IsSuccess, response.Message, response.Data });
         }
 
+        [Authorize]
         [HttpGet("technical")]
         public async Task<ActionResult> HandleGetForTechnicalFileNumber([FromQuery] string technicalFileNumber)
         {

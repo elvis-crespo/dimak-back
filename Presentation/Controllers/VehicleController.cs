@@ -1,6 +1,7 @@
 ﻿using dimax_front.Application.Interfaces;
 using dimax_front.Core.Entities;
 using dimax_front.Domain.DTOs;
+using dimax_front.Shared.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,16 +18,27 @@ namespace dimax_front.Presentation.Controllers
             _vehicleService = vehicleService;
         }
 
-        [Authorize]
-        [HttpGet("vehicles")]
-        public async Task<ActionResult> HandleGetAll()
+        [Authorize(Roles = "Admin")]
+        [HttpGet("showall")]
+        public async Task<ActionResult> HandleGetAll(
+                [FromQuery] 
+                int? pageNumber,
+                int? pageSize,
+                string? sortBy,
+                string? sortDir)
         {
-            var response = await _vehicleService.GetAll();
+            int finalPageNumber = pageNumber ?? int.Parse(AppConstants.DEFAULT_PAGE_NUMBER);
+            int finalPageSize = pageSize ?? int.Parse(AppConstants.DEFAULT_PAGE_SIZE);
+            string finalSortBy = sortBy ?? AppConstants.DEFAULT_SORT_BY;
+            string finalSortDir = sortDir ?? AppConstants.DEFAULT_SORT_DIR;
+
+            var response = await _vehicleService.GetAll(finalPageNumber, finalPageSize, finalSortBy, finalSortDir);
 
             if (!response.IsSuccess)
                 return StatusCode(response.StatusCode, new { response.IsSuccess, response.Message });
 
-            return StatusCode(response.StatusCode, new { response.IsSuccess, response.Message, response.Data });
+            //return StatusCode(response.StatusCode, new { response.IsSuccess, response.Message, response.Data });
+            return StatusCode(response.StatusCode, response);
         }
 
         [Authorize]
@@ -41,7 +53,7 @@ namespace dimax_front.Presentation.Controllers
             return StatusCode(response.StatusCode, new { response.IsSuccess, response.Message, response.Data });
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpPost("register")]
         public async Task<ActionResult> HandleSaveVehicleWithInstallRecord([FromForm] MixDTO mixDTO)
         {

@@ -93,7 +93,7 @@ namespace dimax_front.Migrations
 
                     b.HasKey("Plate");
 
-                    b.ToTable("Vehicules");
+                    b.ToTable("Vehicles");
                 });
 
             modelBuilder.Entity("dimax_front.Domain.Entities.User", b =>
